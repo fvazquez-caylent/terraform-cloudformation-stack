@@ -1,0 +1,40 @@
+ Parameters:
+    VPCName:
+      Description: The name of the VPC being created.
+      Type: String
+      Default: "VPC Public and Private with NAT"
+ Mappings:
+    SubnetConfig:
+      VPC:
+        CIDR: "172.20.0.0/16"
+ Resources:
+    VPC:
+      Type: "AWS::EC2::VPC"
+      Properties:
+        EnableDnsSupport: "true"
+        EnableDnsHostnames: "true"
+        CidrBlock:
+          Fn::FindInMap:
+            - "SubnetConfig"
+            - "VPC"
+            - "CIDR"
+        Tags:
+          -
+            Key: "Application"
+            Value:
+              Ref: "AWS::StackName"
+          -
+            Key: "Network"
+            Value: "Public"
+          -
+            Key: "Name"
+            Value: !Ref 'VPCName'
+ Outputs:
+    VPCId:
+      Description: "VPCId of VPC"
+      Value:
+        Ref: "VPC"
+    CidrBlock:
+      Description: "Cidr Block of VPC"
+      Value: !GetAtt VPC.CidrBlock
+      
